@@ -1,0 +1,88 @@
+﻿
+@model User
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4 p-md-5 ">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-person-circle display-4 text-primary mb-3"></i>
+                        <h3 class="card-title fw-bold">Welcome Back</h3>
+                        <p class="text-muted">Please sign in to continue</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+                    {
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div>@ViewData["ErrorMessage"]</div>
+                        </div>
+                    }
+
+                    <form asp-action="Login" method="post" novalidate>
+                        <div class="mb-4">
+                            <label asp-for="Email" class="form-label fw-semibold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-person text-muted"></i>
+                                </span>
+                                <input asp-for="Email" type="email" class="form-control border-start-0" placeholder="Enter Email" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Password" class="form-label fw-semibold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-lock text-muted"></i>
+                                </span>
+                                <input asp-for="Password" type="password" class="form-control border-start-0" id="passwordInput" placeholder="Enter password" />
+                                <button class="btn btn-outline-secondary border-start-0" type="button" id="togglePassword">
+                                    <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Log In
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-0">Don't have an account? <a asp-action="Register" class="text-primary text-decoration-none">Sign up</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            togglePassword.addEventListener('click', function() {
+
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+
+
+                toggleIcon.classList.toggle('bi-eye');
+                toggleIcon.classList.toggle('bi-eye-slash');
+            });
+        });
+    </script>
+}

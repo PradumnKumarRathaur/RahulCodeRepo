@@ -1,0 +1,41 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.swal2-toast {
+    max-width: 900px !important; /* Set a reasonable maximum width */
+    width: auto !important; /* Allow it to adjust based on content */
+    white-space: normal !important; /* Allow text to wrap naturally */
+    word-break: break-word;
+}
+
+.swal2-toast-success {
+    background-color: #28a745 !important;
+    color: white !important;
+    font-family: 'Segoe UI' !important;
+}
+
+.swal2-toast-warning {
+    background-color: #dc3545 !important;
+    color: white !important;
+    font-family: 'Segoe UI' !important;
+}

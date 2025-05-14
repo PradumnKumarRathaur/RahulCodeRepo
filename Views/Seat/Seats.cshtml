@@ -1,0 +1,130 @@
+﻿@model SeatSelectionViewModel
+
+
+
+<a asp-action="Index" asp-controller="Event" class="btn btn-danger btn-md">
+    Back
+</a>
+
+<h2>Select Your Seats</h2>
+
+<div class="mb-4">
+    <div class="d-flex justify-content-center flex-wrap gap-3">
+        <div class="d-flex align-items-center">
+            <div class="bg-primary rounded p-2 me-2" style="width: 20px; height: 20px;"></div>
+            <span>Available</span>
+        </div>
+      
+        <div class="d-flex align-items-center">
+            <div class="bg-secondary rounded p-2 me-2" style="width: 20px; height: 20px;"></div>
+            <span>Booked</span>
+        </div>
+        <div class="d-flex align-items-center">
+            <div class="bg-warning rounded p-2 me-2" style="width: 20px; height: 20px;"></div>
+            <span>Blocked</span>
+        </div>
+    </div>
+</div>
+
+
+
+
+<p>Total Price: <span id="checkedCount">0 rs</span></p>
+
+<form asp-controller="Booking" asp-action="ContinueToBooking" method="post">
+    <input type="hidden" name="TimeSlotId" value="@Model.TimeSlotId" />
+    <input type="hidden" name="tabSessionId" id="tabSessionId" value="" />
+
+    <div class="row">
+        @foreach (var seat in Model.Seats)
+        {
+            var isDisabled = seat.IsBooked || seat.IsBlocked;
+            <div class="col-md-2 mb-2">
+                <input type="checkbox" class="myCheckbox" name="SelectedSeatIds" value="@seat.SeatId" id="seat-@seat.SeatId" 
+                @(isDisabled ? "disabled" : "")  />
+                <label for="seat-@seat.SeatId" class="btn @(seat.IsBooked ? "btn-secondary" :  seat.IsBlocked ? "btn-warning" : "btn-primary")">
+                    @seat.SeatNumber
+                </label>
+            </div>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Continue to Booking</button>
+
+</form>
+
+@section scripts {
+
+    @if (TempData["Message"] != null)
+    {
+        <script>
+
+            showToast("warning", "@TempData["Message"]");
+
+
+        </script>
+    }
+
+    <script>
+        const checkboxes = document.querySelectorAll(".myCheckbox");
+         const countDisplay = document.getElementById("checkedCount");
+        let checkedCount = 0;
+
+        checkboxes.forEach(cb => {
+          cb.addEventListener("change", () => {
+            if (cb.checked) {
+              checkedCount++;
+            } else {
+              checkedCount--;
+            }
+            countDisplay.textContent = `${checkedCount * 100} rs`;
+          });
+        });
+
+
+
+        if (!sessionStorage.getItem("tabBookingSessionId")) {
+          sessionStorage.setItem("tabBookingSessionId", crypto.randomUUID());
+        }
+        const tabId = sessionStorage.getItem("tabBookingSessionId");
+
+    
+        document.getElementById("tabSessionId").value = tabId;
+
+
+
+
+
+
+
+    </script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/signalr")
+            .build();
+
+      
+        connection.on("ReceiveSeatUpdate", function (slotId, seatNumber) {
+      
+            const seatCheckboxes = document.querySelectorAll(".myCheckbox");
+
+            seatCheckboxes.forEach(cb => {
+                const label = document.querySelector(`label[for="${cb.id}"]`);
+                if (label && label.textContent.trim() === seatNumber) {
+                    cb.disabled = true;
+                    label.classList.remove("btn-primary");
+                    label.classList.add("btn-warning");
+                   
+                }
+            });
+        });
+
+        connection.start().catch(function (err) {
+            console.error(err.toString());
+        });
+    </script>
+
+}

@@ -1,0 +1,126 @@
+﻿@model List<BookedSeatViewModel>
+
+
+<h1>Hello @User.Identity.Name</h1>
+
+
+@{
+    ViewData["Title"] = "Cancel Booked Seats";
+}
+
+
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h3 class="mb-4 text-center fw-bold">Select Your Booked Seats to Cancel</h3>
+
+                    <p class="text-center mt-3 fw-semibold" id="refundAmountDisplay">
+                        Refund Amount: ₹<span id="refundAmount">0</span>
+                    </p>
+
+
+                    <form asp-action="CancelSelectedSeats" method="post">
+                        <div class="row row-cols-6 g-3">
+                            @foreach (var seat in Model)
+                            {
+                                var isBookedByUser = seat.IsBookedByUser;
+                            
+
+
+                                <div class="col text-center">
+                                    <div class="form-check d-flex align-items-center justify-content-center flex-column">
+                                        @if (seat.IsBookedByUser)
+                                        {
+                                            <input type="checkbox"
+                                                   name="SelectedSeatIds"
+                                                   value="@seat.BookingSeatId"
+                                                   id="seat_@seat.SeatId"
+                                                   class="form-check-input mb-1"
+                                                   style="transform: scale(1.2);" />
+                                        }
+
+                                        @{
+                                            var labelClass = seat.IsBookedByUser ? "btn-success" : "btn-secondary";
+                                        }
+
+                                        <label for="seat_@seat.SeatId"
+                                               class="btn @labelClass w-100"
+                                               style="border-radius: 10px;">
+                                            @seat.SeatNumber
+                                        </label>
+                                    </div>
+                                </div>
+
+                            }
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-danger px-4">
+                                <i class="bi bi-x-circle me-2"></i>Cancel Selected Seats
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-3 text-muted small text-center">
+                        <i class="bi bi-info-circle"></i> Only your booked seats are shown in green and can be selected.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section scripts {
+
+    @if (TempData["Error"] != null)
+    {
+        <script>
+
+            showToast("warning", "@TempData["Error"]");
+
+
+        </script>
+    }else if(TempData["Success"] != null)
+    {
+        <script>
+
+            showToast("success", "@TempData["Success"]");
+
+
+        </script>
+    }
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkboxes = document.querySelectorAll('input[name="SelectedSeatIds"]');
+            const refundElement = document.getElementById("refundAmount");
+
+            const bookedCount = @Model.Count(seat => seat.IsBookedByUser);
+            const seatPrice = 100;
+
+           
+           
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener("change", () => {
+                    const selectedCount = document.querySelectorAll('input[name="SelectedSeatIds"]:checked').length;
+                    const refund = selectedCount * seatPrice;
+                    refundElement.textContent = refund;
+                });
+            });
+        });
+    </script>
+
+
+
+
+}
+

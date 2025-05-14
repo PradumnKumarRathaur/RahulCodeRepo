@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Core.Entities.EventWithTimeSlotsViewModel>
+
+<h2>Available Events & Time Slots</h2>
+
+
+
+
+@foreach (var ev in Model)
+{
+    <div class="card p-3 my-3 shadow-sm">
+        <h4>@ev.EventName</h4>
+
+        @if (ev.TimeSlots.Any())
+        {
+            <ul>
+                @foreach (var slot in ev.TimeSlots)
+                {
+                    <li>
+                        <a asp-controller="Seat" asp-action="Seats" asp-route-timeSlotId="@slot.TimeSlotId">
+                            @slot.StartTime.ToString("f")
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p><i>No time slots available.</i></p>
+        }
+    </div>
+}
+
+@section scripts{
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+    
+		  showToast("success", "@TempData["SuccessMessage"]");
+        
+        
+    </script>
+    }
+
+
+}
